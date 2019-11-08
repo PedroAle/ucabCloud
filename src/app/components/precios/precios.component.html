@@ -1,0 +1,105 @@
+
+
+<html>
+    <script data-search-pseudo-elements defer src="https://use.fontawesome.com/releases/latest/js/all.js" integrity="sha384-L469/ELG4Bg9sDQbl0hvjMq8pOcqFgkSpwhwnslzvVVGpDjYJ6wJJyYjvG3u8XW7" crossorigin="anonymous"></script>
+  <div class="container">
+
+    <div class="toppane">
+      <img src="./assets/ucab.png" style="width:120px;height:120; margin-left: 15px;">
+      <!-- <button  style="margin-left: 480px;" id="special" (click)=getInfoFolder()>Folder</button> -->
+      <button  *ngIf="userName == 'admin' && inFolder" style="margin-left: 520px;" id="special" (click)=administration()>Admin</button>
+      <button  *ngIf='inFolder' style="margin-left: 10px;" id="special" (click)=getFiles()>Home</button>
+
+      <button  *ngIf="userName == 'admin' && !inFolder" style="margin-left: 610px;" id="special" (click)=administration()>Admin</button>&nbsp;
+      <button style="position: absolute; top: 64px; right: 20px;" id="special" (click)=goHome()>Logout</button>  <!-- style="margin-left: 650px;" -->
+    </div>
+
+    <div class="leftpane" >
+      <div class="question">
+        <form [formGroup]="Form" (ngSubmit)="upload()" class="form">
+          <input type="file" id="file" formControlName="file"  #fileSelect name="largeFile" (change)="onFileSelect($event)"/>
+          <label for="file" class="btn-1"><span>select</span></label><br>
+          <button class="btn btn-md btn-info" style="margin-left: 45px;"><i class="fa fa-upload fa-lg" aria-hidden="true"> </i></button>
+        </form><br><br>
+
+        <img *ngIf='!inFolder && !cFolder' src="./assets/folder.png" style="width:60px;height:30; margin-left: 35px; position: absolute; top: 500px;" (click)="folderF()">
+
+        <form *ngIf='!inFolder && cFolder' [formGroup]="folderForm" (ngSubmit)="createFolder()" class="form">
+            <div class="question">
+              <input formControlName="folder" type="text" required/>
+              <label>Folder Name</label>
+            </div>
+            <button class='btn btn-success' style="margin-left: 45px; margin-top: 10px;"><i class="fa fa-plus-circle fa-lg" aria-hidden="true"> </i></button>
+        </form>
+        <button *ngIf='!inFolder && cFolder' class='btn btn-danger' style="margin-left: 45px; margin-top: 5px;" (click)="cancelFolder()"><i class="fa fa-times-circle fa-lg" aria-hidden="true"> </i></button>
+      </div>
+    </div>
+
+    <!--   <div class="middlepane" style="text-align:center">
+      </div> -->
+
+    <div class="rightpane">
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col"></th>
+                <th scope="col">Type</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+              </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor = "let file of files">
+                    <th scope="row">
+                      <img *ngIf="file.type == 'png' || file.type == 'jpg'" src="./assets/image.png" class="card-img-top" alt="..." style="width:25px;height:25px; margin-left: 6px;">
+                      <img *ngIf="file.type == 'docx' || file.type == 'docx'" src="./assets/docs.png" class="card-img-top" alt="..." style="width:30px;height:34px;" >
+                      <img *ngIf="file.type == 'pptx' || file.type == 'ppt'" src="./assets/slides.png" class="card-img-top" alt="..." style="width:35px;height:40px; margin-right: 2px;">
+                      <img *ngIf="file.type == 'xls' || file.type == 'xlsx'" src="./assets/sheets.png" class="card-img-top" alt="..." style="width:28px;height:32px; margin-left: 4px;">
+                      <img *ngIf="file.type == 'mp3' || file.type == 'mp4'" src="./assets/music.png" class="card-img-top" alt="..." style="width:30px;height:30px; margin-left: 3px;">
+                      <img *ngIf="file.type == 'pdf'" src="./assets/pdf.png" class="card-img-top" alt="..." style="width:20px;height:32px; margin: auto; margin-top: 7px; margin-left: 5px;">
+                      <img *ngIf="file.type == 'folder'" src="./assets/folder.png" class="card-img-top" alt="..." style="width:32px;height:20px; margin: auto; margin-top: 7px; margin-left: 3px;">
+                    </th>
+                    <td>{{file.name}}</td>
+                    <td>{{file.type}}</td>
+                    <td>
+                      <form *ngIf= "file.type != 'folder' && file.folder == ''" [formGroup]="moveForm" (ngSubmit)="moveFolder(file)" class="form">
+                        <input id="move" formControlName="move" type="text" required placeholder="folder"/>&nbsp;
+                        <button 
+                          type="button" 
+                          class="btn btn-success" (click)="moveFolder(file)">
+                          <i class="fa fa-arrows-alt" aria-hidden="true"> </i>
+                        </button>
+                      </form>
+                    </td>
+                    <td>
+                      <button 
+                        *ngIf="file.type == 'folder'"
+                        type="button" 
+                        class="btn btn-info"
+                        (click)="getFilesFolder(file)">
+                        <i class="fa fa-search" aria-hidden="true"> </i>
+                      </button>
+                      <button 
+                        *ngIf= "file.type != 'folder'"
+                        type="button" 
+                        class="btn btn-info" (click)="download(file)">
+                        <i class="fa fa-download" aria-hidden="true"> </i>
+                      </button>
+                    </td>
+                    <td>
+                      <button 
+                        type="button" 
+                        class="btn btn-danger"
+                        (click)="deleteFile(file)" >
+                        <i class="fa fa-trash" aria-hidden="true"> </i> 
+                      </button>
+                    </td> 
+                  </tr>
+                </tbody>
+          </table>
+    </div>
+
+  </div>
+</html>

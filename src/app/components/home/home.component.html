@@ -1,0 +1,23 @@
+
+<form [formGroup]="registrationForm" (ngSubmit)="login()">
+
+  <h1 style="text-align: center;">Redes Cloud</h1>
+  <div class="question">
+    <input formControlName="userName" type="text" required/>
+    <label>Username</label>
+  </div>
+
+  <div class="question">
+    <input formControlName="password" type="password" required/>
+    <label>Password</label>
+  </div>
+
+  <button>
+  Continuar
+  </button>
+</form>
+<br>
+
+<button (click)="goToSignup()">
+    Registrarse
+</button>

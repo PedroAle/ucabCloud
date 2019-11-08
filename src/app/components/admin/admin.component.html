@@ -1,0 +1,54 @@
+
+
+<html>
+    <script data-search-pseudo-elements defer src="https://use.fontawesome.com/releases/latest/js/all.js" integrity="sha384-L469/ELG4Bg9sDQbl0hvjMq8pOcqFgkSpwhwnslzvVVGpDjYJ6wJJyYjvG3u8XW7" crossorigin="anonymous"></script>
+    <div class="container">
+    
+        <div class="toppane">
+        <img src="./assets/ucab.png" style="width:120px;height:120; margin-left: 15px;">
+        <button style="margin-left: 610px;" id="special" (click)=goBack()>Home</button>&nbsp;
+        <button style="position: absolute; top: 64px; right: 20px;" id="special" (click)=goHome()>Logout</button>  <!-- style="margin-left: 650px;" -->
+     </div>
+    
+        <div class="leftpane" >
+         
+        </div>
+    
+        <!--   <div class="middlepane" style="text-align:center">
+          </div> -->
+    
+        <div class="rightpane">
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Firstname</th>
+                    <th scope="col">Lastname</th>
+                    <th scope="col">User</th>
+                    <th scope="col">Password</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor = "let user of users">
+                    <td>{{ user.firstname }}</td>
+                    <td>{{ user.lastname }}</td>
+                    <td>{{ user.name }}</td>
+                    <td>******</td>
+                    <td></td> 
+                    <td>
+                        <button 
+                            type="button" 
+                            class="btn btn-danger"
+                            (click)="deleteUser(user)" >
+                            <i class="fa fa-trash" aria-hidden="true"> </i> 
+                        </button>
+                    </td> 
+                    </tr>
+                </tbody>
+              </table>
+        </div>
+    
+    </div>
+</html>
+    
