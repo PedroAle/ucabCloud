@@ -7,10 +7,10 @@
     <div class="toppane">
       <img src="./assets/ucab.png" style="width:120px;height:120; margin-left: 15px;">
       <!-- <button  style="margin-left: 480px;" id="special" (click)=getInfoFolder()>Folder</button> -->
-      <button  *ngIf="userName == 'admin' && inFolder" style="margin-left: 520px;" id="special" (click)=administration()>Admin</button>
-      <button  *ngIf='inFolder' style="margin-left: 10px;" id="special" (click)=getFiles()>Home</button>
+      <button  *ngIf="userName == 'admin' && inFolder" style="position: absolute; top: 64px; right: 192px;" id="special" (click)=administration()>Admin</button>
+      <button  *ngIf='inFolder' style="position: absolute; top: 64px; right: 110px;" id="special" (click)=getFiles()>Home</button>
 
-      <button  *ngIf="userName == 'admin' && !inFolder" style="margin-left: 610px;" id="special" (click)=administration()>Admin</button>&nbsp;
+      <button  *ngIf="userName == 'admin' && !inFolder" style="position: absolute; top: 64px; right: 110px;" id="special" (click)=administration()>Admin</button>&nbsp;
       <button style="position: absolute; top: 64px; right: 20px;" id="special" (click)=goHome()>Logout</button>  <!-- style="margin-left: 650px;" -->
     </div>
 
