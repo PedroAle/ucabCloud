@@ -6,6 +6,7 @@ import { NgForm, FormGroup, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router, Route } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
 import { ModalService } from 'src/app/services/modal.service';
+import {saveAs as importedSaveAs} from "file-saver";
 
 @Component({
   selector: 'app-precios',
@@ -137,8 +138,51 @@ export class PreciosComponent implements OnInit {
       console.log('llegue', data)
       
     })
+
+    this.socket.on('fileReceivedPreview', (data, info) => {
+      if (info.type == 'png'){
+        this.seePreview(data.file, {type: 'image/png'}, info.filename, info.type)
+      }
+
+      if (info.type == 'jpg'){
+        this.seePreview(data.file, {type: 'image/jpg'}, info.filename, info.type)
+      }
+
+      if (info.type == 'pdf'){
+        this.seePreview(data.file, {type: 'application/pdf'}, info.filename, info.type)
+      }
+
+      if (info.type == 'mp3'){
+        this.seePreview(data.file, {type: 'audio/mp3'}, info.filename, info.type)
+      }
+
+      if (info.type == 'txt'){
+        this.seePreview(data.file, {type: 'text/plain'}, info.filename, info.type)
+      }
+
+      if (info.type == 'docx'){
+        this.seePreview(data.file, {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}, info.filename, info.type)
+      }
+
+      if (info.type == 'pptx'){
+        this.seePreview(data.file, {type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'}, info.filename, info.type)
+      }
+
+      if (info.type == 'xls'){
+        this.seePreview(data.file, {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;'}, info.filename, info.type)
+      }
+      
+      console.log('llegue', data)
+      
+    })
     ////
     this.updating();
+  }
+
+  seePreview(data: any, type, name, typ){
+    let blob = new Blob([data], type);
+    var objectUrl = URL.createObjectURL(blob);
+    window.open(objectUrl);
   }
 
   getFiles () {
@@ -193,8 +237,19 @@ export class PreciosComponent implements OnInit {
 
   async downLoadFile(data: any, type, name, typ) {
     let blob = new Blob([data], type);
+    importedSaveAs(blob, name);
+    /* let url = window.URL.createObjectURL(blob);
+    let a = document.createElement('a');
+    document.body.appendChild(a);
+    a.setAttribute('style', 'display: none');
+    a.href = url;
+    a.click(); */
+   /*  window.URL.revokeObjectURL(url);
+    a.remove();
     let link = document.createElement('a');
     link.download = name + '.' + typ;
+    var objectUrl = URL.createObjectURL(blob);
+    window.open(objectUrl); */
 
     /* var b: any = blob; */
     //A Blob() is almost a File() - it's just missing the two properties below which we will add
@@ -203,13 +258,13 @@ export class PreciosComponent implements OnInit {
 
     //Cast to a File() type
 
-    let reader = new FileReader();
-    reader.readAsDataURL(<File>blob); // converts the blob to base64 and calls onload
+    /* let reader = new FileReader();
+    reader.readAsDataURL(blob); // converts the blob to base64 and calls onload
 
-    reader.onload = function() {
+     reader.onload = function() {
       link.href = reader.result.toString(); // data url
       link.click();
-    }
+    } */
   }
 
   deleteFile(file) {
@@ -227,17 +282,21 @@ export class PreciosComponent implements OnInit {
 
   upload() {
     this.fReader = new FileReader();
-    this.slice = this.selectedFile.slice(0, 100000); 
+    this.slice = this.selectedFile.slice(0, 8192*8192); 
     this.fReader.readAsArrayBuffer(this.slice); 
-    this.fReader.onload = (evnt) => {
+    this.fReader.onload = async (evnt) => {
       var arrayBuffer = this.fReader.result;
-      this.socket.emit("upload", { name: this.name, type: this.type, size: this.size, data: arrayBuffer, userName: this.userName });
+      await this.socket.emit("upload", { name: this.name, type: this.type, size: this.size, data: arrayBuffer, userName: this.userName });
     };
     this.Form.reset({})
   }
 
   download(file){
     this.socket.emit('download', {filename: file.name, type: file.type , name: this.userName, folder: file.folder});
+  }
+
+  preview(file){
+    this.socket.emit('preview', {filename: file.name, type: file.type , name: this.userName, folder: file.folder});
   }
 
   updating(){
