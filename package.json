@@ -10,7 +10,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "electrondev": "electron .",
-    "package": "electron-packager . firstdesk"
+    "package": "electron-packager . Cloud"
   },
   "private": true,
   "dependencies": {
@@ -22,6 +22,7 @@
     "@angular/platform-browser": "~8.2.3",
     "@angular/platform-browser-dynamic": "~8.2.3",
     "@angular/router": "~8.2.3",
+    "crypto-js": "^3.1.9-1",
     "electron": "^7.1.0",
     "electron-packager": "^14.1.0",
     "file-saver": "^2.0.2",

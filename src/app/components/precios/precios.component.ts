@@ -1,11 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { SocketsService } from 'src/app/services/sockets.service';
+import { Component, OnInit} from '@angular/core';
 import * as io from 'socket.io-client';
-import { FileUploader } from 'ng2-file-upload';
-import { NgForm, FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router, Route } from '@angular/router';
-import { interval, Subscription } from 'rxjs';
-import { ModalService } from 'src/app/services/modal.service';
 import {saveAs as importedSaveAs} from "file-saver";
 
 @Component({
@@ -15,8 +11,6 @@ import {saveAs as importedSaveAs} from "file-saver";
 })
 
 export class PreciosComponent implements OnInit {
-  
-  subscription: Subscription;
 
   public Form: FormGroup = new FormGroup({
     file: new FormControl(null, [
@@ -37,7 +31,6 @@ export class PreciosComponent implements OnInit {
 
   userName;
 
-  filess = {};
   struct = { 
       name: null, 
       type: null, 
@@ -45,11 +38,10 @@ export class PreciosComponent implements OnInit {
       data: []
   };
 
-  private url = 'http://localhost:3000';
-  private socket;
+  order = true;
 
-  title = 'angular-file-upload';
-  public uploader:FileUploader = new FileUploader({url:'http://localhost:3001/upload'});
+  private url = 'http://192.168.8.100:3000';
+  private socket;
 
   selectedFile;
   fReader;
@@ -61,11 +53,9 @@ export class PreciosComponent implements OnInit {
   inFolder = false;
   cFolder = false;
 
-  uploadPercent;
-
   files = [];
 
-  constructor(private socketService: SocketsService, private _activatedRoute: ActivatedRoute, private _router: Router, private modalService: ModalService) {
+  constructor(private _activatedRoute: ActivatedRoute, private _router: Router) {
     this.socket = io(this.url);
     this._activatedRoute.params.subscribe( params => {
       this.userName = params['user'];
@@ -76,7 +66,6 @@ export class PreciosComponent implements OnInit {
   ngOnInit() {
     
     this.socket.on("uploaded", data => {
-      this.uploadPercent = 100;
       console.log("File uploaded successfully");
     });
 
@@ -86,22 +75,19 @@ export class PreciosComponent implements OnInit {
 
     this.socket.emit("getFiles", {username: this.userName});
 
-    this.socket.on('userFiles', data => {
-      this.files = data;
-      console.log("epaaa", this.files)
+    this.socket.on('userFiles', async (data)=>{
+      console.log(data)
+      this.files = this.sorting(data);
     })
 
     this.socket.on('userFilesFolder', data => {
-      this.files = data;
-      console.log("epaaa2", this.files)
+      this.files = data.sort((a, b) => a.name > b.name);
     })
 
     this.socket.on('uploaded', () => {
-      console.log('llegue')
       this.getFiles()
     })
 
-    /////
     this.socket.on('fileReceived', (data, info) => {
       if (info.type == 'png'){
         this.downLoadFile(data.file, {type: 'image/png'}, info.filename, info.type)
@@ -119,6 +105,10 @@ export class PreciosComponent implements OnInit {
         this.downLoadFile(data.file, {type: 'audio/mp3'}, info.filename, info.type)
       }
 
+      if (info.type == 'mp4'){
+        this.downLoadFile(data.file, {type: 'audio/mp4'}, info.filename, info.type)
+      }
+
       if (info.type == 'txt'){
         this.downLoadFile(data.file, {type: 'text/plain'}, info.filename, info.type)
       }
@@ -131,11 +121,9 @@ export class PreciosComponent implements OnInit {
         this.downLoadFile(data.file, {type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'}, info.filename, info.type)
       }
 
-      if (info.type == 'xls'){
+      if (info.type == 'xls' || info.type == 'xlsx' || info.type == 'xlsm'){
         this.downLoadFile(data.file, {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;'}, info.filename, info.type)
       }
-      
-      console.log('llegue', data)
       
     })
 
@@ -175,8 +163,27 @@ export class PreciosComponent implements OnInit {
       console.log('llegue', data)
       
     })
-    ////
-    this.updating();
+
+  }
+
+  sorted(){
+    this.order = !this.order
+    this.getFiles();
+
+  }
+
+  sorting(data){
+    if(this.order){
+      data.sort(function (a, b) {
+        return a.name.localeCompare(b.name);
+      });
+    } else {
+      data.sort(function (a, b) {
+        return a.name.localeCompare(b.name);
+      });
+      data.reverse()
+    }
+    return data
   }
 
   seePreview(data: any, type, name, typ){
@@ -188,83 +195,11 @@ export class PreciosComponent implements OnInit {
   getFiles () {
     this.socket.emit("getFiles", {username: this.userName});
     this.inFolder = false;
-    /* this.socket.on('userFiles', data => {
-      this.files = data;
-    }); */
-
-  }
-
-  getFile (){
-    console.log("llegueee");
-    
-    this.socket.on('fileReceived', (data, info) => {
-      if (info.type == 'png'){
-        this.downLoadFile(data.file, {type: 'image/png'}, info.filename, info.type)
-      }
-
-      if (info.type == 'jpg'){
-        this.downLoadFile(data.file, {type: 'image/jpg'}, info.filename, info.type)
-      }
-
-      if (info.type == 'pdf'){
-        this.downLoadFile(data.file, {type: 'application/pdf'}, info.filename, info.type)
-      }
-
-      if (info.type == 'mp3'){
-        this.downLoadFile(data.file, {type: 'audio/mp3'}, info.filename, info.type)
-      }
-
-      if (info.type == 'txt'){
-        this.downLoadFile(data.file, {type: 'text/plain'}, info.filename, info.type)
-      }
-
-      if (info.type == 'docx'){
-        this.downLoadFile(data.file, {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}, info.filename, info.type)
-      }
-
-      if (info.type == 'pptx'){
-        this.downLoadFile(data.file, {type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'}, info.filename, info.type)
-      }
-
-      if (info.type == 'xls'){
-        this.downLoadFile(data.file, {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;'}, info.filename, info.type)
-      }
-      
-      console.log('llegue', data)
-      
-    })
   }
 
   async downLoadFile(data: any, type, name, typ) {
     let blob = new Blob([data], type);
     importedSaveAs(blob, name);
-    /* let url = window.URL.createObjectURL(blob);
-    let a = document.createElement('a');
-    document.body.appendChild(a);
-    a.setAttribute('style', 'display: none');
-    a.href = url;
-    a.click(); */
-   /*  window.URL.revokeObjectURL(url);
-    a.remove();
-    let link = document.createElement('a');
-    link.download = name + '.' + typ;
-    var objectUrl = URL.createObjectURL(blob);
-    window.open(objectUrl); */
-
-    /* var b: any = blob; */
-    //A Blob() is almost a File() - it's just missing the two properties below which we will add
-    /* b.lastModifiedDate = new Date();
-    b.name = 'fileName.pdf'; */
-
-    //Cast to a File() type
-
-    /* let reader = new FileReader();
-    reader.readAsDataURL(blob); // converts the blob to base64 and calls onload
-
-     reader.onload = function() {
-      link.href = reader.result.toString(); // data url
-      link.click();
-    } */
   }
 
   deleteFile(file) {
@@ -298,11 +233,6 @@ export class PreciosComponent implements OnInit {
   preview(file){
     this.socket.emit('preview', {filename: file.name, type: file.type , name: this.userName, folder: file.folder});
   }
-
-  updating(){
-    const source = interval(2500);
-    this.subscription = source.subscribe(val => this.update());
-  }
   
   createFolder(){
     let data = {
@@ -313,7 +243,6 @@ export class PreciosComponent implements OnInit {
       username: this.userName
     }
     this.socket.emit('folder', data);
-    //this.socketService.createFolder(data);
     this.folderForm.reset({})
     this.cFolder = false;
   }
@@ -324,22 +253,11 @@ export class PreciosComponent implements OnInit {
     this.moveForm.reset({})
   }
 
-  getInfoFolder(){
-    this.socket.emit('getFilesFolder', {  user: this.userName, folder: this.folder})
-  }
-
   getFilesFolder(file){
     this.folder = file.name;
     this.socket.emit('getFilesFolder', {  user: this.userName, folder: this.folder});
     this.inFolder = true;
     console.log(this.folder);
-    
-    //this.socket.emit('getFilesFolder', {  user: this.userName, folder: file.folder})
-  }
-
-  update(){
-    //this.getFiles();
-    //this.getFile();
   }
 
   goHome(){
@@ -355,8 +273,7 @@ export class PreciosComponent implements OnInit {
   }
 
   administration(){
-this._router.navigate(['/admin'])
+    this._router.navigate(['/admin'])
   }
-  
 
 }

@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import * as CryptoJS from 'crypto-js';
 import {
   FormGroup,
-  FormControl,
-  Validators,
-  FormsModule
+  FormControl
 } from '@angular/forms';
 import { SocketsService } from 'src/app/services/sockets.service';
 import { Router } from '@angular/router';
@@ -38,10 +37,19 @@ export class ProtegidaComponent implements OnInit {
       firstname: this.registrationForm.get('firstname').value,
       lastname: this.registrationForm.get('lastname').value,
       name: this.registrationForm.get('userName').value,
-      password: this.registrationForm.get('password').value 
+      password: this.encryptData(this.registrationForm.get('password').value)
     }
     this.socketsService.createUser(user);
-    this._router.navigate(['/home']);
+    this.socketsService.userExisted();
+    this.socketsService.userRegistered();
+  }
+
+  encryptData(data) {
+    try {
+      return (CryptoJS.SHA256(data, "Key")['words'][0]);
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   public goToLogin(){

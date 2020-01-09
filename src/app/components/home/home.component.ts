@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import * as CryptoJS from 'crypto-js';
+import * as io from 'socket.io-client';
 import {
   FormGroup,
   FormControl,
@@ -7,7 +9,6 @@ import {
 } from '@angular/forms';
 import { SocketsService } from 'src/app/services/sockets.service';
 import { Router } from '@angular/router';
-import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -17,45 +18,47 @@ import { interval, Subscription } from 'rxjs';
 
 export class HomeComponent implements OnInit {
 
-  subscription: Subscription;
+  private url = 'http://192.168.8.100:3000';
+  private socket;
+  userUnknown;
 
   public registrationForm: FormGroup = new FormGroup({
-    userName: new FormControl(null, [
-    ]),
-    password: new FormControl(null, [
-    ]),
+    userName: new FormControl(null, [Validators.required,Validators.minLength(5)]),
+    password: new FormControl(null, [Validators.required,Validators.minLength(5)]),
   });
 
-  constructor(private socketsService: SocketsService, private _router: Router) { }
+  constructor(private socketsService: SocketsService, private _router: Router) { 
+    this.socket = io(this.url);
+  }
 
   ngOnInit() {
-    this.updating();
+    this.socketsService.getuser();
+    this.userUnknown = this.socketsService.userUnknown();
   }
 
   public login():void {
     let user = {
       name: this.registrationForm.get('userName').value,
-      password: this.registrationForm.get('password').value 
+      password: this.encryptData(this.registrationForm.get('password').value)
     }
+    console.log(user.password)
+
     this.socketsService.login(user);
 
-  }
-
-  getLogin(){
-    this.socketsService.getuser();
-  }
-
-  updating(){
-    const source = interval(2500);
-    this.subscription = source.subscribe(val => this.update());
-  }
-
-  update(){
-    this.getLogin();
   }
 
   goToSignup(){
     this._router.navigate(['/protegida']);
   }
+
+
+encryptData(data) {
+
+  try {
+    return (CryptoJS.SHA256(data, "Key")['words'][0]);
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 }

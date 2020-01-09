@@ -42,71 +42,95 @@
         <table class="table">
             <thead>
               <tr>
-                <th scope="col">Name</th>
                 <th scope="col"></th>
-                <th scope="col">Type</th>
+                <th scope="col">
+                  <button 
+                    *ngIf="order"
+                    style="color: gray; font-size:13px;"
+                    type="button" 
+                    class="btn"
+                    (click)="sorted()" >Name
+                    <i class="fa fa-caret-up" aria-hidden="true"> </i> 
+                  </button>
+                  <button 
+                    *ngIf="!order"
+                    style="color: gray; font-size:13px;"
+                    type="button" 
+                    class="btn"
+                    (click)="sorted()" >Name
+                    <i class="fa fa-caret-down" aria-hidden="true"> </i> 
+                  </button>
+                </th>
+                <th scope="col">
+                  <button
+                    style="color: gray; font-size:13px;"
+                    type="button" 
+                    class="btn"
+                    >Type
+                  </button>
+                </th>
                 <th scope="col"></th>
                 <th scope="col"></th>
                 <th scope="col"></th>
                 <th scope="col"></th>
               </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor = "let file of files">
-                    <th scope="row">
-                      <img *ngIf="file.type == 'png' || file.type == 'jpg'" src="./assets/image.png" class="card-img-top" alt="..." style="width:25px;height:25px; margin-left: 6px;">
-                      <img *ngIf="file.type == 'docx' || file.type == 'docx'" src="./assets/docs.png" class="card-img-top" alt="..." style="width:30px;height:34px;" >
-                      <img *ngIf="file.type == 'pptx' || file.type == 'ppt'" src="./assets/slides.png" class="card-img-top" alt="..." style="width:35px;height:40px; margin-right: 2px;">
-                      <img *ngIf="file.type == 'xls' || file.type == 'xlsx'" src="./assets/sheets.png" class="card-img-top" alt="..." style="width:28px;height:32px; margin-left: 4px;">
-                      <img *ngIf="file.type == 'mp3' || file.type == 'mp4'" src="./assets/music.png" class="card-img-top" alt="..." style="width:30px;height:30px; margin-left: 3px;">
-                      <img *ngIf="file.type == 'pdf'" src="./assets/pdf.png" class="card-img-top" alt="..." style="width:20px;height:32px; margin: auto; margin-top: 7px; margin-left: 5px;">
-                      <img *ngIf="file.type == 'folder'" src="./assets/folder.png" class="card-img-top" alt="..." style="width:32px;height:20px; margin: auto; margin-top: 7px; margin-left: 3px;">
-                    </th>
-                    <td>{{file.name}}</td>
-                    <td>{{file.type}}</td>
-                    <td>
-                      <form *ngIf= "file.type != 'folder' && file.folder == ''" [formGroup]="moveForm" (ngSubmit)="moveFolder(file)" class="form">
-                        <input id="move" formControlName="move" type="text" required placeholder="folder"/>&nbsp;
-                        <button 
-                          type="button" 
-                          class="btn btn-success" (click)="moveFolder(file)">
-                          <i class="fa fa-arrows-alt" aria-hidden="true"> </i>
-                        </button>
-                      </form>
-                    </td>
-                    <td>
-                      <button 
-                        *ngIf= "file.type != 'folder'"
-                        type="button" 
-                        class="btn btn-warning" (click)="preview(file)">
-                        <i class="fa fa-eye" aria-hidden="true"> </i>
-                      </button>
-                    </td>
-                    <td>
-                      <button 
-                        *ngIf="file.type == 'folder'"
-                        type="button" 
-                        class="btn btn-info"
-                        (click)="getFilesFolder(file)">
-                        <i class="fa fa-search" aria-hidden="true"> </i>
-                      </button>
-                      <button 
-                        *ngIf= "file.type != 'folder'"
-                        type="button" 
-                        class="btn btn-info" (click)="download(file)">
-                        <i class="fa fa-download" aria-hidden="true"> </i>
-                      </button>
-                    </td>
-                    <td>
-                      <button 
-                        type="button" 
-                        class="btn btn-danger"
-                        (click)="deleteFile(file)" >
-                        <i class="fa fa-trash" aria-hidden="true"> </i> 
-                      </button>
-                    </td> 
-                  </tr>
-                </tbody>
+            </thead>
+            <tbody>
+              <tr *ngFor = "let file of files">
+                <td scope="row">
+                  <img *ngIf="file.type == 'png' || file.type == 'jpg'" src="./assets/image.png" class="card-img-top" alt="..." style="width:25px;height:25px; margin-left: 6px;">
+                  <img *ngIf="file.type == 'docx' || file.type == 'docx'" src="./assets/docs.png" class="card-img-top" alt="..." style="width:30px;height:34px;" >
+                  <img *ngIf="file.type == 'pptx' || file.type == 'ppt'" src="./assets/slides.png" class="card-img-top" alt="..." style="width:35px;height:40px; margin-right: 2px;">
+                  <img *ngIf="file.type == 'xls' || file.type == 'xlsx'" src="./assets/sheets.png" class="card-img-top" alt="..." style="width:28px;height:32px; margin-left: 4px;">
+                  <img *ngIf="file.type == 'mp3' || file.type == 'mp4'" src="./assets/music.png" class="card-img-top" alt="..." style="width:30px;height:30px; margin-left: 3px;">
+                  <img *ngIf="file.type == 'pdf'" src="./assets/pdf.png" class="card-img-top" alt="..." style="width:20px;height:32px; margin: auto; margin-top: 7px; margin-left: 5px;">
+                  <img *ngIf="file.type == 'folder'" src="./assets/folder.png" class="card-img-top" alt="..." style="width:32px;height:20px; margin: auto; margin-top: 7px; margin-left: 3px;">
+                </td>
+                <td>{{file.name}}</td>
+                <td>{{file.type}}</td>
+                <td>
+                  <form *ngIf= "file.type != 'folder' && file.folder == ''" [formGroup]="moveForm" (ngSubmit)="moveFolder(file)" class="form">
+                    <input id="move" formControlName="move" type="text" required placeholder="folder"/>&nbsp;
+                    <button 
+                      type="button" 
+                      class="btn btn-success" (click)="moveFolder(file)">
+                      <i class="fa fa-arrows-alt" aria-hidden="true"> </i>
+                    </button>
+                  </form>
+                </td>
+                <td>
+                  <button 
+                    *ngIf= "file.type != 'folder'"
+                    type="button" 
+                    class="btn btn-warning" (click)="preview(file)">
+                    <i class="fa fa-eye" aria-hidden="true"> </i>
+                  </button>
+                </td>
+                <td>
+                  <button 
+                    *ngIf="file.type == 'folder'"
+                    type="button" 
+                    class="btn btn-info"
+                    (click)="getFilesFolder(file)">
+                    <i class="fa fa-search" aria-hidden="true"> </i>
+                  </button>
+                  <button 
+                    *ngIf= "file.type != 'folder'"
+                    type="button" 
+                    class="btn btn-info" (click)="download(file)">
+                    <i class="fa fa-download" aria-hidden="true"> </i>
+                  </button>
+                </td>
+                <td>
+                  <button 
+                    type="button" 
+                    class="btn btn-danger"
+                    (click)="deleteFile(file)" >
+                    <i class="fa fa-trash" aria-hidden="true"> </i> 
+                  </button>
+                </td> 
+              </tr>
+            </tbody>
           </table>
     </div>
 
